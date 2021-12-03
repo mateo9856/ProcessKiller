@@ -20,8 +20,6 @@ namespace ProcessKiller.Infrastructure
             {"rundll32", "windows"}
         };
 
-        public static Dictionary<int, string> Exceptions = new Dictionary<int, string>();
-
         public static Dictionary<int, string> KillProcesses = new Dictionary<int, string>();
 
     }

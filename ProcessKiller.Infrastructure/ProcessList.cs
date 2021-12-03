@@ -10,15 +10,6 @@ namespace ProcessKiller.Infrastructure
     public class ProcessList
     {
         
-        public void AddExceptionProcess(string processName)
-        {
-            var GetProcess = Process.GetProcessesByName(processName);
-            foreach(var item in GetProcess)
-            {//think how add exception processes
-                SystemProcesses.Exceptions.Add(item.Id, item.ProcessName);
-            }
-        }
-
         public void KillProcessById(int id)
         {
             var GetProcess = Process.GetProcessById(id);
