@@ -10,11 +10,19 @@ namespace ProcessKiller.Infrastructure
     public class ProcessList
     {
         
-        public void KillProcessById(int id)
+        public bool KillProcessById(int id)
         {
-            var GetProcess = Process.GetProcessById(id);
-            SystemProcesses.KillProcesses.Add(GetProcess.Id, GetProcess.MainModule.FileName);
-            GetProcess.Kill();
+            try
+            {
+                var GetProcess = Process.GetProcessById(id);
+                SystemProcesses.KillProcesses.Add(GetProcess.Id, GetProcess.MainModule.FileName);
+                GetProcess.Kill();
+                return true;
+            } catch(Exception)
+            {
+                return false;
+            }
+
         }
 
         public void StartProcessFromHistory(int id)
@@ -33,24 +41,60 @@ namespace ProcessKiller.Infrastructure
             }
         }
 
-        public void KillByProcessName(string name)
+        public bool KillByProcessName(string name)
         {
-            var Get = Process.GetProcessesByName(name);
-            foreach(var item in Get)
+            try
             {
-                SystemProcesses.KillProcesses.Add(item.Id, item.MainModule.FileName);
-                item.Kill();
+                var Get = Process.GetProcessesByName(name);
+                foreach (var item in Get)
+                {
+                    SystemProcesses.KillProcesses.Add(item.Id, item.MainModule.FileName);
+                    item.Kill();
+                }
+                return true;
+            } catch (Exception)
+            {
+                return false;
             }
+
         }
 
-        public void KillMultipleProcess(int[] processes)
+        public static object FindProcess(object process)
         {
-            var GetProcesses = Process.GetProcesses().Where(d => processes.Contains(d.Id));
-
-            foreach(var item in GetProcesses)
+            dynamic GetProcess = null;
+            try
             {
-                SystemProcesses.KillProcesses.Add(item.Id, item.MainModule.FileName);
-                item.Kill();
+                int id = int.Parse(process.ToString()); 
+                GetProcess = Process.GetProcessById(id);
+            } catch(Exception) {
+                GetProcess = Process.GetProcessesByName((string)process).First();
+            }
+            return new
+            {
+                ProcessName = (Process)GetProcess.ProcessName,
+                ProcessID = (Process)GetProcess.ProcessId, 
+                Priority = (Process)GetProcess.BasePriority,
+                Path = (Process)GetProcess.MainModule.FileName,
+                Version = (Process)GetProcess.MainModule.FileVersionInfo,
+                ModuleInfo = (Process)GetProcess.ModuleInfo
+            };
+        }
+
+        public bool KillMultipleProcess(int[] processes)
+        {
+            try
+            {
+                var GetProcesses = Process.GetProcesses().Where(d => processes.Contains(d.Id));
+
+                foreach (var item in GetProcesses)
+                {
+                    SystemProcesses.KillProcesses.Add(item.Id, item.MainModule.FileName);
+                    item.Kill();
+                }
+                return true;
+            } catch(Exception)
+            {
+                return false;
             }
 
         }

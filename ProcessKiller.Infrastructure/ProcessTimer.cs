@@ -16,6 +16,7 @@ namespace ProcessKiller.Infrastructure
         {
             base.AutoReset = true;
             base.Enabled = true;
+            base.Start();
         }
     }
 }
