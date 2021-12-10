@@ -10,17 +10,16 @@ namespace ProcessKiller.Infrastructure
     public class ProcessList
     {
         
-        public bool KillProcessById(int id)
+        public void KillProcessById(int id)
         {
             try
             {
                 var GetProcess = Process.GetProcessById(id);
                 SystemProcesses.KillProcesses.Add(GetProcess.Id, GetProcess.MainModule.FileName);
                 GetProcess.Kill();
-                return true;
             } catch(Exception)
             {
-                return false;
+                Console.WriteLine("Process not found");
             }
 
         }
@@ -41,7 +40,7 @@ namespace ProcessKiller.Infrastructure
             }
         }
 
-        public bool KillByProcessName(string name)
+        public void KillByProcessName(string name)
         {
             try
             {
@@ -51,10 +50,9 @@ namespace ProcessKiller.Infrastructure
                     SystemProcesses.KillProcesses.Add(item.Id, item.MainModule.FileName);
                     item.Kill();
                 }
-                return true;
             } catch (Exception)
             {
-                return false;
+                Console.WriteLine("Process not found!");
             }
 
         }
@@ -80,7 +78,7 @@ namespace ProcessKiller.Infrastructure
             };
         }
 
-        public bool KillMultipleProcess(int[] processes)
+        public void KillMultipleProcess(int[] processes)
         {
             try
             {
@@ -91,10 +89,9 @@ namespace ProcessKiller.Infrastructure
                     SystemProcesses.KillProcesses.Add(item.Id, item.MainModule.FileName);
                     item.Kill();
                 }
-                return true;
             } catch(Exception)
             {
-                return false;
+                Console.WriteLine("ProcessNotFound");
             }
 
         }
