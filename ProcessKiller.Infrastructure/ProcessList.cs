@@ -19,7 +19,7 @@ namespace ProcessKiller.Infrastructure
                 GetProcess.Kill();
             } catch(Exception)
             {
-                Console.WriteLine("Process not found");
+                Console.WriteLine("Process not found press any key to stop interval!");
             }
 
         }
@@ -52,7 +52,7 @@ namespace ProcessKiller.Infrastructure
                 }
             } catch (Exception)
             {
-                Console.WriteLine("Process not found!");
+                Console.WriteLine("Process not found press any key to stop interval");
             }
 
         }
@@ -91,7 +91,7 @@ namespace ProcessKiller.Infrastructure
                 }
             } catch(Exception)
             {
-                Console.WriteLine("ProcessNotFound");
+                Console.WriteLine("Process not found press any key to stop interval");
             }
 
         }
