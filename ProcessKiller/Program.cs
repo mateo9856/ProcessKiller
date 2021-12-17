@@ -10,7 +10,7 @@ namespace ProcessKiller
     {
         public static void Main(string[] args)
         {
-            new ProcessBuilder().StartProcessByPath("notepad", "C:\\Windows");
+            new ProcessSearch().FindProcessByNameAndDrive("notepad", "C:\\");
             //var App = new Runtime();
             //App.RunNewConsole();
         }
