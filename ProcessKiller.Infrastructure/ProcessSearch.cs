@@ -1,59 +1,88 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ProcessKiller.Infrastructure
 {
     public class ProcessSearch
     {
-        private HashSet<string> DirectoriesTree = new HashSet<string>();
-
+        private Thread[] FolderThreads { get; set; }
+        private string PathDir { get; set; } = "";
+        private bool lockThread { get; set; } = false;
         public void FindProcessByNameAndDrive(string name, string drive)
         {
             string ActualPath = drive;
-            var DriveDirectory = Directory.GetFileSystemEntries(drive, "*.*", SearchOption.TopDirectoryOnly);
-            int DirectoryIndex = 0;
-            while(!ActualPath.Contains(name))
-            {
-                try
-                {
-                    ActualPath = DriveDirectory[DirectoryIndex];
-                    var IsSearched = ResearchFolder(ActualPath, name);
-                } catch(Exception)
-                {
 
-                }
-                DirectoryIndex++;
+            var GetThreads = Environment.ProcessorCount;
+
+            var DriveDirectory = Directory.GetFileSystemEntries(drive, "*.*", SearchOption.TopDirectoryOnly);
+            FolderThreads = new Thread[DriveDirectory.Length];
+            lockThread = true;
+            for(int i = 0; i < DriveDirectory.Length; i++)
+            {
+                ActualPath = DriveDirectory[i];
+                FolderThreads[i] = new Thread(() => ResearchFolder(ActualPath, name));
+                FolderThreads[i].Start();
             }
-            Console.WriteLine();
         }
 
         private bool ResearchFolder(string path, string name)
-        {//folder searched!!! add only condition if file is search!!
-            //add threading!!
-            var CheckFiles = Directory.GetFileSystemEntries(path, "*.*", SearchOption.TopDirectoryOnly);
-            foreach(var CheckFile in CheckFiles)
+        {
+            var reg = new Regex(@"[^\\]+$");
+            while (lockThread == true)
             {
-
-                if(CheckFile.Contains(name))
-                {
-                    return true;
-                }
-
                 try
                 {
-                    ResearchFolder(CheckFile, name);
-                    Console.WriteLine(CheckFile);
+                    string[] CheckFiles = Directory.GetFileSystemEntries(path, "*.*", SearchOption.TopDirectoryOnly).ToArray();
+                    
+                    if(CheckFiles.Any(d => d.Contains(".")))
+                    {
+                        CheckFiles = CheckFiles.OrderBy(d => reg.IsMatch(d)).ToArray();
+                    }//think how resolve problem with sort by files
+
+                    foreach (var CheckFile in CheckFiles)
+                    {
+                        Console.WriteLine(CheckFile);
+                        if (CheckFile.Contains(name))
+                        {
+                            Console.WriteLine("FIND!!!!" + " " + name);
+                            ClearThreads(FolderThreads);
+                            return true;
+                        }
+
+                        try
+                        {
+                            ResearchFolder(CheckFile, name);
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine(Thread.CurrentThread.Name);
+                        }
+                    }
                 }
-                catch(Exception)
+                catch (Exception)
                 {
-
+                    Console.WriteLine("ERROR");
                 }
+
+
+                return false;
             }
-
-            return false;
-
+            return true;
+        }
+        private void ClearThreads(Thread[] threads)
+        {
+            lockThread = false;
+            foreach (var thread in threads)
+            {
+                thread.Abort();
+            }
+            FolderThreads = null;
         }
 
     }

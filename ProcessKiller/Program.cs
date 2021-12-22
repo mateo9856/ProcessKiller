@@ -10,7 +10,7 @@ namespace ProcessKiller
     {
         public static void Main(string[] args)
         {
-            new ProcessSearch().FindProcessByNameAndDrive("notepad", "C:\\");
+            new ProcessSearch().FindProcessByNameAndDrive("notepad", "C:\\");//try sort by first file not directories
             //var App = new Runtime();
             //App.RunNewConsole();
         }
