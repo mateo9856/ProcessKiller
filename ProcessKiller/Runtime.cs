@@ -35,7 +35,8 @@ namespace ProcessKiller
             Console.WriteLine("2. KillByName");
             Console.WriteLine("3. KillMultipleProcesses");
             Console.WriteLine("4. FindProcess");
-            Console.WriteLine("5. Read History");
+            Console.WriteLine("5. Search Process");
+            Console.WriteLine("6. Read History");
             val = Int32.Parse(Console.ReadLine());
 
             try
@@ -51,7 +52,18 @@ namespace ProcessKiller
 
                     Console.WriteLine(GetDetails);
 
-                } else
+                }
+                else if(val == 5)
+                {
+                    var search = new ProcessSearch();
+                    Console.WriteLine("Select your drive and type name:");
+                    search.GetDrives();
+                    string drive = Console.ReadLine();
+                    Console.WriteLine("Enter process name:");
+                    string process = Console.ReadLine();
+                    Console.WriteLine(search.FindProcessByNameAndDrive(process, drive));
+                }
+                else
                 {
                     ProcessHistory ph = new ProcessHistory();
                     Console.WriteLine("Open in notepad? press T!");

@@ -14,7 +14,17 @@ namespace ProcessKiller.Infrastructure
         private Thread[] FolderThreads { get; set; }
         private string PathDir { get; set; } = "";
         private bool lockThread { get; set; } = false;
-        public void FindProcessByNameAndDrive(string name, string drive)
+
+        public void GetDrives()
+        {
+            var Drives = Directory.GetLogicalDrives();
+            foreach(var Drive in Drives)
+            {
+                Console.WriteLine(Drive);
+            }
+        }
+
+        public string FindProcessByNameAndDrive(string name, string drive)
         {
             string ActualPath = drive;
 
@@ -29,6 +39,12 @@ namespace ProcessKiller.Infrastructure
                 FolderThreads[i] = new Thread(() => ResearchFolder(ActualPath, name));
                 FolderThreads[i].Start();
             }
+            while(!PathDir.Contains(name))
+            {
+
+            }
+            lockThread = false;
+            return PathDir;
         }
 
         private bool ResearchFolder(string path, string name)
@@ -38,19 +54,16 @@ namespace ProcessKiller.Infrastructure
             {
                 try
                 {
-                    string[] CheckFiles = Directory.GetFileSystemEntries(path, "*.*", SearchOption.TopDirectoryOnly).ToArray();
+                    string[] CheckFiles = Directory.GetFileSystemEntries(path, "*.*", SearchOption.TopDirectoryOnly)
+                        .OrderBy(d => d.Length)
+                        .OrderByDescending(d => d.Contains(".exe"))
+                        .ToArray();
                     
-                    if(CheckFiles.Any(d => d.Contains(".")))
-                    {
-                        CheckFiles = CheckFiles.OrderBy(d => reg.IsMatch(d)).ToArray();
-                    }//think how resolve problem with sort by files
-
                     foreach (var CheckFile in CheckFiles)
                     {
-                        Console.WriteLine(CheckFile);
                         if (CheckFile.Contains(name))
                         {
-                            Console.WriteLine("FIND!!!!" + " " + name);
+                            PathDir = CheckFile;
                             ClearThreads(FolderThreads);
                             return true;
                         }
@@ -67,7 +80,6 @@ namespace ProcessKiller.Infrastructure
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("ERROR");
                 }
 
 
