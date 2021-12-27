@@ -6,16 +6,13 @@ using System.Text;
 
 namespace ProcessKiller.Infrastructure
 {
-    public class ProcessHistory
+    public class ProcessHistory : IDisposable
     {
         public void WriteHistory(string processName, int id)
         {
             var GetDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             var FolderPath = Path.Combine(GetDirectory, "ProcessKillerPath", "history.txt");
-            //if(File.Exists(FolderPath))
-            //{
 
-            //}
             using(StreamWriter sw = new StreamWriter(FolderPath))
             {
                  sw.WriteLine($"{processName} {id} {DateTime.Now}");
@@ -48,6 +45,12 @@ namespace ProcessKiller.Infrastructure
             }
 
             return "history.txt not found!";
+        }
+
+        public void Dispose()
+        {
+            this.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

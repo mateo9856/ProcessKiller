@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
+using ProcessKiller;
 using System.Timers;
 
 namespace ProcessKiller.Infrastructure
@@ -10,12 +10,21 @@ namespace ProcessKiller.Infrastructure
     public class ProcessList
     {
         
-        public void KillProcessById(int id)
+        public void KillProcessById(int id, bool history)
         {
             try
             {
                 var GetProcess = Process.GetProcessById(id);
                 SystemProcesses.KillProcesses.Add(GetProcess.Id, GetProcess.MainModule.FileName);
+                
+                if(history)
+                {
+                    using(var pHistory = new ProcessHistory())
+                    {
+                        pHistory.WriteHistory(GetProcess.MainModule.FileName, GetProcess.Id);
+                    }
+                }
+
                 GetProcess.Kill();
             } catch(Exception)
             {
@@ -40,7 +49,7 @@ namespace ProcessKiller.Infrastructure
             }
         }
 
-        public void KillByProcessName(string name)
+        public void KillByProcessName(string name, bool history)
         {
             try
             {
@@ -48,6 +57,13 @@ namespace ProcessKiller.Infrastructure
                 foreach (var item in Get)
                 {
                     SystemProcesses.KillProcesses.Add(item.Id, item.MainModule.FileName);
+                    if (history)
+                    {
+                        using (var pHistory = new ProcessHistory())
+                        {
+                            pHistory.WriteHistory(item.MainModule.FileName, item.Id);
+                        }
+                    }
                     item.Kill();
                 }
             } catch (Exception)
@@ -78,7 +94,7 @@ namespace ProcessKiller.Infrastructure
             };
         }
 
-        public void KillMultipleProcess(int[] processes)
+        public void KillMultipleProcess(int[] processes, bool history)
         {
             try
             {
@@ -87,6 +103,13 @@ namespace ProcessKiller.Infrastructure
                 foreach (var item in GetProcesses)
                 {
                     SystemProcesses.KillProcesses.Add(item.Id, item.MainModule.FileName);
+                    if (history)
+                    {
+                        using (var pHistory = new ProcessHistory())
+                        {
+                            pHistory.WriteHistory(item.MainModule.FileName, item.Id);
+                        }
+                    }
                     item.Kill();
                 }
             } catch(Exception)

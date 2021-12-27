@@ -11,7 +11,6 @@ namespace ProcessKiller
     {
         public static void Main(string[] args)
         {
-            //new ProcessSearch().FindProcessByNameAndDrive("notepad", "C:\\");
             var App = new Runtime();
             App.RunNewConsole();
         }

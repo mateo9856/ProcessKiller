@@ -12,7 +12,7 @@ namespace ProcessKiller
     {
         private static ProcessTimer timer;
         private static int val;
-        
+        static bool SaveHistory = false;
         struct ReadValues
         {
             public int SelectedId;
@@ -37,10 +37,10 @@ namespace ProcessKiller
             Console.WriteLine("4. FindProcess");
             Console.WriteLine("5. Search Process");
             Console.WriteLine("6. Read History");
-            val = Int32.Parse(Console.ReadLine());
 
             try
             {
+                val = Int32.Parse(Console.ReadLine());
                 if (val < 4)
                 {
                     GetValueChanger(ref val);
@@ -79,6 +79,7 @@ namespace ProcessKiller
                 if (Console.ReadLine() == "X")
                 {
                     Console.Clear();
+                    this.Dispose();
                     RunNewConsole();
                 }
             }
@@ -107,6 +108,13 @@ namespace ProcessKiller
                     values.SelectedMultiple = Array.ConvertAll(SplitArr, d => Int32.Parse(d));
                     break;
             }
+            Console.WriteLine("Are you save history? press y if you agree");
+            
+            if (Console.ReadLine() == "t")
+                SaveHistory = true;
+            else
+                SaveHistory = false;
+
             timer.StartInterval();
             Console.WriteLine("Press any key to stop kill!");
             Console.ReadKey();
@@ -119,13 +127,13 @@ namespace ProcessKiller
                 switch(val)
                 {
                     case 1:
-                        ProcessList.KillProcessById(values.SelectedId);
+                        ProcessList.KillProcessById(values.SelectedId, SaveHistory);
                         break;
                     case 2:
-                        ProcessList.KillByProcessName(values.SelectedName);
+                        ProcessList.KillByProcessName(values.SelectedName, SaveHistory);
                         break;
                     case 3:
-                        ProcessList.KillMultipleProcess(values.SelectedMultiple);
+                        ProcessList.KillMultipleProcess(values.SelectedMultiple, SaveHistory);
                         break;
                     default:
                         Console.WriteLine("Bad value!");
